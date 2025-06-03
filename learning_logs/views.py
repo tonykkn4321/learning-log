@@ -1,4 +1,7 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from django.http import Http404
+
 from .models import Topic, Entry
 from .forms import TopicForm, EntryForm
 
@@ -7,22 +10,27 @@ def index(request):
     """學習筆記的主頁。"""
     return render(request, 'learning_logs/index.html')
 
+@login_required
 def topics(request):
     """顯示所有的主題。"""
-    topics = Topic.objects.order_by('date_added')
+    topics = Topic.objects.filter(owner=request.user).order_by('date_added')
     context = {'topics': topics}
     return render(request, 'learning_logs/topics.html', context)
 
+@login_required
 def topic(request, topic_id):
     """顯示單個主題及其所有的條目。"""
     topic = Topic.objects.get(id=topic_id)
+    # 確認請求的主題屬於當前用戶。
+    if topic.owner != request.user:
+        raise Http404
     entries = topic.entry_set.order_by('-date_added')
     context = {'topic': topic, 'entries': entries}
     return render(request, 'learning_logs/topic.html', context)
 
+@login_required
 def new_topic(request):
-    """添加新主題。"""
-
+    """添加新主题。"""
     if request.method != 'POST':
         # 未提交數據：創建一個新表單。
         form = TopicForm()
@@ -30,13 +38,16 @@ def new_topic(request):
         # POST提交的數據：對數據進行處理。
         form = TopicForm(data=request.POST)
         if form.is_valid():
-            form.save()
+            new_topic = form.save(commit=False)
+            new_topic.owner = request.user
+            new_topic.save()
             return redirect('learning_logs:topics')
 
     # 顯示空表單或指出表單數據無效。
     context = {'form': form}
     return render(request, 'learning_logs/new_topic.html', context)
 
+@login_required
 def new_entry(request, topic_id):
     """在特定主題中添加新條目。"""
     topic = Topic.objects.get(id=topic_id)
@@ -57,10 +68,13 @@ def new_entry(request, topic_id):
     context = {'topic': topic, 'form': form}
     return render(request, 'learning_logs/new_entry.html', context)
 
+@login_required
 def edit_entry(request, entry_id):
     """編輯既有條目。"""
     entry = Entry.objects.get(id=entry_id)
     topic = entry.topic
+    if topic.owner != request.user:
+        raise Http404
 
     if request.method != 'POST':
         # 初次請求：使用當前條目填充表單。
