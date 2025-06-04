@@ -33,6 +33,11 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'learning_logs',
     'users',
+
+    # 第三方應用程序
+    "django_bootstrap5",
+
+    # Django默認添加的應用程序
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -125,4 +130,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # 我的設置
 LOGIN_URL = 'users:login'
+LOGIN_REDIRECT_URL = 'learning_logs:index'
 
