@@ -1,0 +1,4 @@
+# 這裡列出的每個服務都將被部署到 Platform.sh 項目的一個容器中
+db:
+ type: postgresql:12
+ disk: 1024
