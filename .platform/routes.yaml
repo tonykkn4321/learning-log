@@ -1,9 +1,9 @@
 # 每條路由都描述了 Platform.sh 該如何處理到來的請求（用 URL 表示）
 
 "https://{default}/":
- type: upstream
- upstream: "ll_project:http"
+  type: upstream
+  upstream: "ll_project:http"
 
 "https://www.{default}/":
- type: redirect
- to: "https://{default}/"
+  type: redirect
+  to: "https://{default}/"
