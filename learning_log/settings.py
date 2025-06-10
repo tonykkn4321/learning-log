@@ -156,5 +156,10 @@ if config.is_valid_platform():
                 'HOST': db_settings['host'],
                 'PORT': db_settings['port'],
             },
+            'sqlite': {
+                'ENGINE': 'django.db.backends.sqlite3',
+                'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+            }
+
         }
 
