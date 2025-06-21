@@ -1,4 +1,9 @@
-# 這裡列出的每個服務都將被部署到 Platform.sh 項目的一個容器中
+# The services of the project.
+#
+# Each service listed will be deployed
+# to power your Platform.sh project.
+# More information: https://docs.platform.sh/add-services.html
+# Full list of available services: https://docs.platform.sh/add-services.html#available-services
 db:
-  type: postgresql:12
+  type: postgresql:16
   disk: 1024

@@ -1,9 +1,14 @@
-# 每條路由都描述了 Platform.sh 該如何處理到來的請求（用 URL 表示）
-
+# The routes of the project.
+#
+# Each route describes how an incoming URL is going
+# to be processed by Platform.sh.
+# More information: https://docs.platform.sh/define-routes.html
 "https://{default}/":
   type: upstream
-  upstream: "ll_project:http"
+  upstream: "app:http"
 
+# A basic redirect definition
+# More information: https://docs.platform.sh/define-routes.html#basic-redirect-definition
 "https://www.{default}/":
   type: redirect
   to: "https://{default}/"
