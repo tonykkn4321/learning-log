@@ -1,5 +1,6 @@
 asgiref==3.8.1
-django==4.2.23
+Django==5.2.3
+django-bootstrap5==25.1
 sqlparse==0.5.3
 
 # 線上項目的部署需求
