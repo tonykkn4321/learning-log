@@ -1,5 +1,5 @@
 #########################
-# Django 4 using pip
+# Django4 using pipenv
 ##########################
 # Container configuration.
 
@@ -7,7 +7,7 @@
 
 # A unique name for the app. Must be lowercase alphanumeric characters. Changing the name destroys data associated
 # with the app.
-name: 'learning_logs'
+name: 'app'
 
 # The runtime the application uses.
 # Complete list of available runtimes: https://docs.platform.sh/create-apps/app-reference.html#types
@@ -16,7 +16,7 @@ type: 'python:3.10'
 # The relationships of the application with services or other applications.
 # The left-hand side is the name of the relationship as it will be exposed
 # to the application in the PLATFORM_RELATIONSHIPS variable. The right-hand
-# side is in the form `<s.ervice name>:<endpoint name>`.
+# side is in the form `<service name>:<endpoint name>`.
 # More information: https://docs.platform.sh/create-apps/app-reference.html#relationships
 relationships:
   database: "db:postgresql"
@@ -30,6 +30,9 @@ mounts:
   'logs':
     source: local
     source_path: logs
+  '.cache':
+    source: local
+    source_path: cache
 
 # The web key configures the web server running in front of your app.
 # More information: https://docs.platform.sh/create-apps/app-reference.html#web
@@ -38,7 +41,7 @@ web:
   # More information: https://docs.platform.sh/create-apps/app-reference.html#web-commands
   commands:
     # The command to launch your app. If it terminates, it’s restarted immediately.
-    start: "gunicorn -w 4 -b unix:$SOCKET myapp.wsgi:application"
+    start: "pipenv run gunicorn -w 4 -b unix:$SOCKET myapp.wsgi:application"
 
   # More information: https://docs.platform.sh/configuration/app-containers.html#upstream
   upstream:
@@ -62,6 +65,14 @@ web:
       # Whether to allow serving files which don’t match a rule.
       allow: true
 
+# Installs global dependencies as part of the build process. They’re independent of your app’s dependencies and
+# are available in the PATH during the build process and in the runtime environment. They’re installed before
+# the build hook runs using a package manager for the language.
+# More information: https://docs.platform.sh/create-apps/app-reference.html#dependencies
+dependencies:
+  python3:
+    pipenv: '2024.0.1'
+
 # Hooks allow you to customize your code/environment as the project moves through the build and deploy stages
 # More information: https://docs.platform.sh/create-apps/app-reference.html#hooks
 hooks:
@@ -74,14 +85,14 @@ hooks:
     python3.10 -m pip install --upgrade pip
 
     # Install dependencies
-    pip install -r requirements.txt
+    pipenv install --deploy
 
     # Collect static assets
-    python manage.py collectstatic
+    pipenv run python manage.py collectstatic
 
   # The deploy hook is run after the app container has been started, but before it has started accepting requests.
   # More information: https://docs.platform.sh/create-apps/hooks/hooks-comparison.html#deploy-hook
-  deploy: python manage.py migrate
+  deploy: pipenv run python manage.py migrate
 
 # Information on the app's source code and operations that can be run on it.
 # More information: https://docs.platform.sh/create-apps/app-reference.html#source
@@ -98,22 +109,4 @@ source:
   operations:
     auto-update:
       command: |
-        # Upgrade pip
-        python3.10 -m pip install --upgrade pip
-
-        # Upgrade Poetry.
-        ./install-poetry.sh
-        export PATH="/app/.local/bin:$PATH"
-        poetry update --lock
-
-        # Upgrade pip
-        poetry export -f requirements.txt > requirements.txt
-
-        # Upgrade Pipenv.
-        pip install pipenv
-        pipenv update
-
-        git add Pipfile.lock poetry.lock requirements.txt
-        git commit --allow-empty -m "Dependency updates."
-#      command: |
-#        curl -fsS https://raw.githubusercontent.com/platformsh/source-operations/main/setup.sh | { bash /dev/fd/3 sop-autoupdate; } 3<&0
+        curl -fsS https://raw.githubusercontent.com/platformsh/source-operations/main/setup.sh | { bash /dev/fd/3 sop-autoupdate; } 3<&0
