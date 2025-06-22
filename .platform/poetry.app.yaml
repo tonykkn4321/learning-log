@@ -7,7 +7,7 @@
 
 # A unique name for the app. Must be lowercase alphanumeric characters. Changing the name destroys data associated
 # with the app.
-name: 'learning_logs'
+name: 'learning_log'
 
 # The runtime the application uses.
 # Complete list of available runtimes: https://docs.platform.sh/create-apps/app-reference.html#types
@@ -38,7 +38,7 @@ web:
   # More information: https://docs.platform.sh/create-apps/app-reference.html#web-commands
   commands:
     # The command to launch your app. If it terminates, it’s restarted immediately.
-    start: "poetry run gunicorn -w 4 -b unix:$SOCKET learning_logs.wsgi:application"
+    start: "poetry run gunicorn -w 4 -b unix:$SOCKET learning_log.wsgi:application"
 
   # More information: https://docs.platform.sh/configuration/app-containers.html#upstream
   upstream:
