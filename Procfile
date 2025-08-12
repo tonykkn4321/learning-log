@@ -1,1 +1,1 @@
-web: gunicorn learning_log.wsgi:application
+web: ./start.sh
